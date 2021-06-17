@@ -3,9 +3,9 @@ module github.com/DataWorkbench/jobwatcher
 go 1.15
 
 require (
-	github.com/DataWorkbench/common v0.0.0-20210616064428-7fa8704914b5
+	github.com/DataWorkbench/common v0.0.0-20210617164914-7a8b5e7a06cd
 	github.com/DataWorkbench/glog v0.0.0-20201114060240-9471edb2b8cf
-	github.com/DataWorkbench/gproto v0.0.0-20210616061035-72bebe09571b
+	github.com/DataWorkbench/gproto v0.0.0-20210617171219-288b2a12766c
 	github.com/DataWorkbench/loader v0.0.0-20201119073611-6f210eb11a8c
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/spf13/cobra v1.1.1

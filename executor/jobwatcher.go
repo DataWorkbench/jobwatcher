@@ -240,7 +240,7 @@ func (ex *JobwatcherExecutor) GetJobStatus(ctx context.Context, ID string) (rep 
 		return
 	}
 
-	rep.Status = constants.StringStatusToInt32(job.Status)
+	rep.State = constants.StringStatusToInt32(job.Status)
 	rep.Message = job.Message
 	return
 }
