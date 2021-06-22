@@ -13,5 +13,3 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 	gorm.io/gorm v1.20.8
 )
-
-replace github.com/DataWorkbench/common v0.0.0-20210617164914-7a8b5e7a06cd => /home/lzzhang/bigdata/common/
