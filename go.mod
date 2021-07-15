@@ -3,7 +3,7 @@ module github.com/DataWorkbench/jobwatcher
 go 1.15
 
 require (
-	github.com/DataWorkbench/common v0.0.0-20210617164914-7a8b5e7a06cd
+	github.com/DataWorkbench/common v0.0.0-20210715135423-d0867840db1d
 	github.com/DataWorkbench/glog v0.0.0-20201114060240-9471edb2b8cf
 	github.com/DataWorkbench/gproto v0.0.0-20210617171219-288b2a12766c
 	github.com/DataWorkbench/loader v0.0.0-20201119073611-6f210eb11a8c
