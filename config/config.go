@@ -25,7 +25,7 @@ const (
 type Config struct {
 	LogLevel           int8                   `json:"log_level"      yaml:"log_level"      env:"LOG_LEVEL" validate:"gte=1,lte=5"`
 	JobWorks           int32                  `json:"job_works"      yaml:"job_works"      env:"JOB_WORKS" validate:"gte=1,lte=1000"`
-	JobDeveloperServer string                 `json:"jobdeveloper_server"      yaml:"jobdeveloper_server"      env:"JOBDEVELOPER_SERVER" validate:"required"`
+	JobDeveloperServer *grpcwrap.ClientConfig `json:"jobdeveloper_server"      yaml:"jobdeveloper_server"      env:"JOBDEVELOPER_SERVER" validate:"required"`
 	PickupAloneJobs    int32                  `json:"pickup_alone_jobs"      yaml:"pickup_alone_jobs"      env:"PICKUP_ALONE_JOBS" validate:"gte=0,lte=1"`
 	GRPCServer         *grpcwrap.ServerConfig `json:"grpc_server"    yaml:"grpc_server"    env:"GRPC_SERVER"         validate:"required"`
 	MetricsServer      *metrics.Config        `json:"metrics_server" yaml:"metrics_server" env:"METRICS_SERVER"      validate:"required"`

@@ -13,8 +13,8 @@ cloud.google.com/go/storage v1.0.0/go.mod h1:IhtSnM/ZTZV8YYJWCY8RULGVqBDmpoyjwiy
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
-github.com/DataWorkbench/common v0.0.0-20210715135423-d0867840db1d h1:3uT2jLd/mDOvLPrAKKE7x8X0YLdhKKgy3klLRDTxjb4=
-github.com/DataWorkbench/common v0.0.0-20210715135423-d0867840db1d/go.mod h1:vpT/+jsstJmn+o1eDFJKzerSXPULk1F7P1R4aZE7Xuk=
+github.com/DataWorkbench/common v0.0.0-20210719042530-b8b3223175e3 h1:OSEpqiqwAS2Sv2Fk4CKbyjRsgv2Dhk/FEqyLFrWsP7o=
+github.com/DataWorkbench/common v0.0.0-20210719042530-b8b3223175e3/go.mod h1:vpT/+jsstJmn+o1eDFJKzerSXPULk1F7P1R4aZE7Xuk=
 github.com/DataWorkbench/glog v0.0.0-20201114060240-9471edb2b8cf h1:JcbEUCoQOICv7iwJodQkzx/W9xtWerYi5iCShEJSS/Q=
 github.com/DataWorkbench/glog v0.0.0-20201114060240-9471edb2b8cf/go.mod h1:zymxJLXn162xdWYUqIb729S3ZzRQpdTj/LwnW+xxru4=
 github.com/DataWorkbench/gproto v0.0.0-20210616083110-dd0ed74c2552/go.mod h1:ZCyz1BvwA0kGnybpNCnBRfFqgDKu73YFQ9yE/rUSRfo=
@@ -382,7 +382,6 @@ github.com/uber/jaeger-lib v2.4.0+incompatible/go.mod h1:ComeNDZlWwrWnDv8aPp0Ba6
 github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijbERA=
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
-github.com/yu31/snowflake v0.0.0-20210309213122-580647caa2bb h1:4icwEahXE3BzVfq8II9ajyxo3NuP7CSiDG2Gr9HsRCk=
 github.com/yu31/snowflake v0.0.0-20210309213122-580647caa2bb/go.mod h1:kj86CfGUK7fPMCyw7lN1CgNDJ57GmtZgyzPqftMd0kQ=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=

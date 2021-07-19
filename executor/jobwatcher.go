@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/DataWorkbench/common/constants"
+	"github.com/DataWorkbench/common/functions"
 	"github.com/DataWorkbench/glog"
 	"github.com/DataWorkbench/gproto/pkg/jobpb"
 
@@ -13,27 +14,27 @@ import (
 )
 
 type jobQueueType struct {
-	Job             constants.JobWatchInfo
+	Job             functions.JobWatchInfo
 	ServerAddr      string
 	RunEnd          bool
 	ParagraphIndex  int
 	ParagraphID     string
 	StatusFailedNum int32
-	HttpClient      constants.HttpClient
+	HttpClient      functions.HttpClient
 }
 
 type JobwatcherExecutor struct {
 	db           *gorm.DB
-	watchChan    chan constants.JobWatchInfo
-	jobDevClient constants.JobdevClient
+	watchChan    chan functions.JobWatchInfo
+	jobDevClient functions.JobdevClient
 	ctx          context.Context
 	logger       *glog.Logger
 }
 
-func NewJobWatcherExecutor(db *gorm.DB, jobwork int32, ictx context.Context, logger *glog.Logger, PickupAloneJob int32, jClient constants.JobdevClient) *JobwatcherExecutor {
+func NewJobWatcherExecutor(db *gorm.DB, jobwork int32, ictx context.Context, logger *glog.Logger, PickupAloneJob int32, jClient functions.JobdevClient) *JobwatcherExecutor {
 	ex := &JobwatcherExecutor{
 		db:           db,
-		watchChan:    make(chan constants.JobWatchInfo, jobwork),
+		watchChan:    make(chan functions.JobWatchInfo, jobwork),
 		jobDevClient: jClient,
 		ctx:          ictx,
 		logger:       logger,
@@ -50,7 +51,7 @@ func NewJobWatcherExecutor(db *gorm.DB, jobwork int32, ictx context.Context, log
 }
 
 func (ex *JobwatcherExecutor) WatchJob(ctx context.Context, jobInfo string) (err error) {
-	var watchInfo constants.JobWatchInfo
+	var watchInfo functions.JobWatchInfo
 
 	if err = json.Unmarshal([]byte(jobInfo), &watchInfo); err != nil {
 		return
@@ -88,14 +89,14 @@ func GetNextParagraphID(job jobQueueType) (r jobQueueType) {
 	return
 }
 
-func InitJobInfo(watchInfo constants.JobWatchInfo) (job jobQueueType) {
+func InitJobInfo(watchInfo functions.JobWatchInfo) (job jobQueueType) {
 	job.Job = watchInfo
 	job.ParagraphIndex = 0
 	job.ParagraphID = watchInfo.FlinkParagraphIDs.Conf
 	job.RunEnd = false
 	job.StatusFailedNum = 0
 	job.ServerAddr = watchInfo.ServerAddr
-	job.HttpClient = constants.NewHttpClient(watchInfo.ServerAddr)
+	job.HttpClient = functions.NewHttpClient(watchInfo.ServerAddr)
 
 	return
 }
@@ -112,7 +113,7 @@ func (ex *JobwatcherExecutor) WatchJobThread(ctx context.Context) {
 		select {
 		case info := <-ex.watchChan:
 			jobQueue[info.ID] = InitJobInfo(info)
-			if err = constants.ModifyStatus(ctx, info.ID, constants.StatusRunning, "ready to checkstatus", info.FlinkResources, info.EngineType, ex.db, ex.logger, jobQueue[info.ID].HttpClient, ex.jobDevClient); err != nil {
+			if err = functions.ModifyStatus(ctx, info.ID, constants.StatusRunning, "ready to checkstatus", info.FlinkResources, info.EngineType, ex.db, ex.logger, jobQueue[info.ID].HttpClient, ex.jobDevClient); err != nil {
 				ex.logger.Error().Msg("can't change the job status to  running").String("jobid", info.ID).Fire()
 			}
 		case <-time.After(time.Second * 1):
@@ -123,17 +124,17 @@ func (ex *JobwatcherExecutor) WatchJobThread(ctx context.Context) {
 						jobQueue[id] = job
 						ex.logger.Error().Msg("can't get this paragraph status").String("noteid", job.Job.NoteID).String("paragraphid", job.ParagraphID).Int32("failednum", job.StatusFailedNum).Fire()
 
-						if job.StatusFailedNum < constants.MaxStatusFailedNum {
+						if job.StatusFailedNum < functions.MaxStatusFailedNum {
 							break
 						} else {
-							status = constants.ParagraphError
+							status = functions.ParagraphError
 							err = nil
 						}
 					}
-					if status == constants.ParagraphFinish {
+					if status == functions.ParagraphFinish {
 						job = GetNextParagraphIDValid(job)
 						if job.RunEnd == true {
-							if err = constants.ModifyStatus(ctx, job.Job.ID, constants.StatusFinish, constants.JobSuccess, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
+							if err = functions.ModifyStatus(ctx, job.Job.ID, constants.StatusFinish, constants.JobSuccess, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
 								ex.logger.Error().Msg("can't change the job status to finish").String("jobid", job.Job.ID).Fire()
 								break
 							}
@@ -145,11 +146,11 @@ func (ex *JobwatcherExecutor) WatchJobThread(ctx context.Context) {
 							break
 						}
 						jobQueue[id] = job
-						if err = constants.ModifyStatus(ctx, job.Job.ID, constants.StatusRunning, job.ParagraphID+" is running", job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
+						if err = functions.ModifyStatus(ctx, job.Job.ID, constants.StatusRunning, job.ParagraphID+" is running", job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
 							ex.logger.Error().Msg("can't change the job status to running").String("jobid", job.Job.ID).String("paragraphid", job.ParagraphID).Fire()
 							break
 						}
-					} else if status == constants.ParagraphError {
+					} else if status == functions.ParagraphError {
 						var joberrmsg string
 
 						if joberrmsg, err = job.HttpClient.GetParagraphResultOutput(job.Job.NoteID, job.ParagraphID); err != nil {
@@ -157,11 +158,11 @@ func (ex *JobwatcherExecutor) WatchJobThread(ctx context.Context) {
 							joberrmsg = "get error message failed"
 						}
 
-						if err = constants.ModifyStatus(ctx, job.Job.ID, constants.StatusFailed, joberrmsg, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
+						if err = functions.ModifyStatus(ctx, job.Job.ID, constants.StatusFailed, joberrmsg, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
 							ex.logger.Error().Msg("can't change the job status to failed").String("jobid", job.Job.ID).Fire()
 							//break
 						}
-						if job.StatusFailedNum < constants.MaxStatusFailedNum {
+						if job.StatusFailedNum < functions.MaxStatusFailedNum {
 							if err = job.HttpClient.DeleteNote(job.Job.NoteID); err != nil {
 								ex.logger.Error().Msg("can't delete the job note").String("jobid", job.Job.ID).Fire()
 							}
@@ -170,8 +171,8 @@ func (ex *JobwatcherExecutor) WatchJobThread(ctx context.Context) {
 						}
 						delete(jobQueue, id)
 						break
-					} else if status == constants.ParagraphAbort {
-						if err = constants.ModifyStatus(ctx, job.Job.ID, constants.StatusFinish, constants.JobAbort, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
+					} else if status == functions.ParagraphAbort {
+						if err = functions.ModifyStatus(ctx, job.Job.ID, constants.StatusFinish, constants.JobAbort, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
 							ex.logger.Error().Msg("can't change the job status to finish(abort)").String("jobid", job.Job.ID).Fire()
 							break
 						}
@@ -199,17 +200,17 @@ func (ex *JobwatcherExecutor) WatchJobThread(ctx context.Context) {
 func (ex *JobwatcherExecutor) PickupAloneJobs(ctx context.Context) {
 	var (
 		err  error
-		jobs []constants.JobmanagerInfo
+		jobs []functions.JobmanagerInfo
 	)
 
 	db := ex.db.WithContext(ctx)
-	if err = db.Table(constants.JobmanagerTableName).Select("id, noteid, paragraph,resources,enginetype").Where("status = '" + constants.StatusRunningString + "'").Scan(&jobs).Error; err != nil {
+	if err = db.Table(functions.JobmanagerTableName).Select("id, noteid, paragraph,resources,enginetype").Where("status = '" + constants.StatusRunningString + "'").Scan(&jobs).Error; err != nil {
 		ex.logger.Error().Msg("can't scan jobmanager table for pickup alone job").Fire()
 		return
 	}
 
 	for _, job := range jobs {
-		var watchInfo constants.JobWatchInfo
+		var watchInfo functions.JobWatchInfo
 		var Pa constants.FlinkParagraphsInfo
 		var r constants.JobResources
 
@@ -240,13 +241,13 @@ func (ex *JobwatcherExecutor) GetJobStatus(ctx context.Context, ID string) (rep 
 		return
 	}
 
-	rep.State = constants.StringStatusToInt32(job.Status)
+	rep.State = functions.StringStatusToInt32(job.Status)
 	rep.Message = job.Message
 	return
 }
 
-func (ex *JobwatcherExecutor) GetJobInfo(ctx context.Context, ID string) (job constants.JobmanagerInfo, err error) {
+func (ex *JobwatcherExecutor) GetJobInfo(ctx context.Context, ID string) (job functions.JobmanagerInfo, err error) {
 	db := ex.db.WithContext(ctx)
-	err = db.Table(constants.JobmanagerTableName).Select("noteid, status,message,enginetype").Where("id = '" + ID + "'").Scan(&job).Error
+	err = db.Table(functions.JobmanagerTableName).Select("noteid, status,message,enginetype").Where("id = '" + ID + "'").Scan(&job).Error
 	return
 }

@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/DataWorkbench/common/constants"
+	"github.com/DataWorkbench/common/functions"
 	"github.com/DataWorkbench/common/gormwrap"
 	"github.com/DataWorkbench/common/trace"
 	"github.com/DataWorkbench/common/utils/buildinfo"
@@ -47,6 +47,8 @@ func Start() (err error) {
 		metricServer *metrics.Server
 		tracer       trace.Tracer
 		tracerCloser io.Closer
+		jobdevClient functions.JobdevClient
+		jobdevConn   *grpcwrap.ClientConn
 	)
 
 	defer func() {
@@ -74,11 +76,17 @@ func Start() (err error) {
 	if err != nil {
 		return
 	}
-	jobdevClient, tmperr := constants.NewJobdevClient(cfg.JobDeveloperServer)
-	if tmperr != nil {
-		err = tmperr
+
+	jobdevConn, err = grpcwrap.NewConn(ctx, cfg.JobDeveloperServer, grpcwrap.ClientWithTracer(tracer))
+	if err != nil {
 		return
 	}
+
+	jobdevClient, err = functions.NewJobdevClient(jobdevConn)
+	if err != nil {
+		return
+	}
+
 	rpcServer.Register(func(s *grpc.Server) {
 		jobwpb.RegisterJobwatcherServer(s, NewJobWatcherServer(executor.NewJobWatcherExecutor(db, cfg.JobWorks, ctx, lp, cfg.PickupAloneJobs, jobdevClient)))
 	})

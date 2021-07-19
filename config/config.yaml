@@ -4,14 +4,18 @@ log_level: 1
 # gte=1,lte=1000
 job_works: 16
 
-jobdeveloper_server: "127.0.0.1:53001"
+jobdeveloper_server:
+  address: "127.0.0.1:53001"  # required
+  log_level: 2 #  1 => info, 2 => waring, 3 => error, 4 => fatal
+  log_verbosity: 99
+
 # 0 or 1
 pickup_alone_jobs: 1
 
 grpc_server:
   address: "127.0.0.1:51001"  # required
   log_level: 2 #  1 => info, 2 => waring, 3 => error, 4 => fatal
-  log_verbosity: 9
+  log_verbosity: 99
 
 metrics_server:
   enabled: true
