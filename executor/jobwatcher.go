@@ -136,10 +136,11 @@ func (ex *JobwatcherExecutor) WatchJobThread(ctx context.Context) {
 						if job.RunEnd == true {
 							var jobmsg string
 
-							if jobmsg, err = job.HttpClient.GetParagraphResultOutput(job.Job.NoteID, job.ParagraphID); err != nil {
+							if jobmsg, err = job.HttpClient.GetParagraphResultOutput(job.Job.NoteID, job.Job.FlinkParagraphIDs.MainRun); err != nil {
 								ex.logger.Error().Msg("can't get this paragraph info for a error paragraph").String("noteid", job.Job.NoteID).String("paragraphid", job.ParagraphID).String("error msg", err.Error()).Fire()
-								jobmsg = "get error message failed"
+								jobmsg = "get message failed"
 							}
+
 							if err = functions.ModifyStatus(ctx, job.Job.ID, constants.StatusFinish, jobmsg, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
 								ex.logger.Error().Msg("can't change the job status to finish").String("jobid", job.Job.ID).Fire()
 								break
@@ -161,7 +162,7 @@ func (ex *JobwatcherExecutor) WatchJobThread(ctx context.Context) {
 
 						if jobmsg, err = job.HttpClient.GetParagraphResultOutput(job.Job.NoteID, job.ParagraphID); err != nil {
 							ex.logger.Error().Msg("can't get this paragraph info for a error paragraph").String("noteid", job.Job.NoteID).String("paragraphid", job.ParagraphID).String("error msg", err.Error()).Fire()
-							jobmsg = "get error message failed"
+							jobmsg = "get message failed"
 						}
 
 						if err = functions.ModifyStatus(ctx, job.Job.ID, constants.StatusFailed, jobmsg, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
@@ -182,7 +183,7 @@ func (ex *JobwatcherExecutor) WatchJobThread(ctx context.Context) {
 
 						if jobmsg, err = job.HttpClient.GetParagraphResultOutput(job.Job.NoteID, job.ParagraphID); err != nil {
 							ex.logger.Error().Msg("can't get this paragraph info for a error paragraph").String("noteid", job.Job.NoteID).String("paragraphid", job.ParagraphID).String("error msg", err.Error()).Fire()
-							jobmsg = "get error message failed"
+							jobmsg = "get message failed"
 						}
 
 						if err = functions.ModifyStatus(ctx, job.Job.ID, constants.StatusFinish, jobmsg, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
