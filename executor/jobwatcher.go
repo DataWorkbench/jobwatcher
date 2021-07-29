@@ -134,7 +134,13 @@ func (ex *JobwatcherExecutor) WatchJobThread(ctx context.Context) {
 					if status == functions.ParagraphFinish {
 						job = GetNextParagraphIDValid(job)
 						if job.RunEnd == true {
-							if err = functions.ModifyStatus(ctx, job.Job.ID, constants.StatusFinish, constants.JobSuccess, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
+							var jobmsg string
+
+							if jobmsg, err = job.HttpClient.GetParagraphResultOutput(job.Job.NoteID, job.ParagraphID); err != nil {
+								ex.logger.Error().Msg("can't get this paragraph info for a error paragraph").String("noteid", job.Job.NoteID).String("paragraphid", job.ParagraphID).String("error msg", err.Error()).Fire()
+								jobmsg = "get error message failed"
+							}
+							if err = functions.ModifyStatus(ctx, job.Job.ID, constants.StatusFinish, jobmsg, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
 								ex.logger.Error().Msg("can't change the job status to finish").String("jobid", job.Job.ID).Fire()
 								break
 							}
@@ -151,14 +157,14 @@ func (ex *JobwatcherExecutor) WatchJobThread(ctx context.Context) {
 							break
 						}
 					} else if status == functions.ParagraphError {
-						var joberrmsg string
+						var jobmsg string
 
-						if joberrmsg, err = job.HttpClient.GetParagraphResultOutput(job.Job.NoteID, job.ParagraphID); err != nil {
+						if jobmsg, err = job.HttpClient.GetParagraphResultOutput(job.Job.NoteID, job.ParagraphID); err != nil {
 							ex.logger.Error().Msg("can't get this paragraph info for a error paragraph").String("noteid", job.Job.NoteID).String("paragraphid", job.ParagraphID).String("error msg", err.Error()).Fire()
-							joberrmsg = "get error message failed"
+							jobmsg = "get error message failed"
 						}
 
-						if err = functions.ModifyStatus(ctx, job.Job.ID, constants.StatusFailed, joberrmsg, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
+						if err = functions.ModifyStatus(ctx, job.Job.ID, constants.StatusFailed, jobmsg, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
 							ex.logger.Error().Msg("can't change the job status to failed").String("jobid", job.Job.ID).Fire()
 							//break
 						}
@@ -172,7 +178,14 @@ func (ex *JobwatcherExecutor) WatchJobThread(ctx context.Context) {
 						delete(jobQueue, id)
 						break
 					} else if status == functions.ParagraphAbort {
-						if err = functions.ModifyStatus(ctx, job.Job.ID, constants.StatusFinish, constants.JobAbort, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
+						var jobmsg string
+
+						if jobmsg, err = job.HttpClient.GetParagraphResultOutput(job.Job.NoteID, job.ParagraphID); err != nil {
+							ex.logger.Error().Msg("can't get this paragraph info for a error paragraph").String("noteid", job.Job.NoteID).String("paragraphid", job.ParagraphID).String("error msg", err.Error()).Fire()
+							jobmsg = "get error message failed"
+						}
+
+						if err = functions.ModifyStatus(ctx, job.Job.ID, constants.StatusFinish, jobmsg, job.Job.FlinkResources, job.Job.EngineType, ex.db, ex.logger, job.HttpClient, ex.jobDevClient); err != nil {
 							ex.logger.Error().Msg("can't change the job status to finish(abort)").String("jobid", job.Job.ID).Fire()
 							break
 						}
