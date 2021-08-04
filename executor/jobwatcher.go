@@ -75,8 +75,9 @@ func GetNextParagraphID(job jobQueueType) (r jobQueueType) {
 	order := make(map[int]string)
 	order[0] = job.Job.FlinkParagraphIDs.Conf
 	order[1] = job.Job.FlinkParagraphIDs.Depends
-	order[2] = job.Job.FlinkParagraphIDs.FuncScala
-	order[3] = job.Job.FlinkParagraphIDs.MainRun
+	order[2] = job.Job.FlinkParagraphIDs.ScalaUDF
+	order[3] = job.Job.FlinkParagraphIDs.PythonUDF
+	order[4] = job.Job.FlinkParagraphIDs.MainRun
 
 	r = job
 
