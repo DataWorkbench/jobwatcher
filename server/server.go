@@ -11,7 +11,7 @@ import (
 
 	"github.com/DataWorkbench/common/functions"
 	"github.com/DataWorkbench/common/gormwrap"
-	"github.com/DataWorkbench/common/trace"
+	"github.com/DataWorkbench/common/gtrace"
 	"github.com/DataWorkbench/common/utils/buildinfo"
 	"github.com/DataWorkbench/glog"
 	"google.golang.org/grpc"
@@ -45,7 +45,7 @@ func Start() (err error) {
 		db           *gorm.DB
 		rpcServer    *grpcwrap.Server
 		metricServer *metrics.Server
-		tracer       trace.Tracer
+		tracer       gtrace.Tracer
 		tracerCloser io.Closer
 		jobdevClient functions.JobdevClient
 		jobdevConn   *grpcwrap.ClientConn
@@ -60,7 +60,7 @@ func Start() (err error) {
 		_ = lp.Close()
 	}()
 
-	tracer, tracerCloser, err = trace.New(cfg.Tracer)
+	tracer, tracerCloser, err = gtrace.New(cfg.Tracer)
 	if err != nil {
 		return
 	}

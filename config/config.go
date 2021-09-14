@@ -8,8 +8,8 @@ import (
 
 	"github.com/DataWorkbench/common/gormwrap"
 	"github.com/DataWorkbench/common/grpcwrap"
+	"github.com/DataWorkbench/common/gtrace"
 	"github.com/DataWorkbench/common/metrics"
-	"github.com/DataWorkbench/common/trace"
 	"github.com/DataWorkbench/loader"
 	"github.com/go-playground/validator/v10"
 	"gopkg.in/yaml.v3"
@@ -30,7 +30,7 @@ type Config struct {
 	GRPCServer         *grpcwrap.ServerConfig `json:"grpc_server"    yaml:"grpc_server"    env:"GRPC_SERVER"         validate:"required"`
 	MetricsServer      *metrics.Config        `json:"metrics_server" yaml:"metrics_server" env:"METRICS_SERVER"      validate:"required"`
 	MySQL              *gormwrap.MySQLConfig  `json:"mysql"          yaml:"mysql"          env:"MYSQL"               validate:"required"`
-	Tracer             *trace.Config          `json:"tracer"         yaml:"tracer"         env:"TRACER"              validate:"required"`
+	Tracer             *gtrace.Config         `json:"tracer"         yaml:"tracer"         env:"TRACER"              validate:"required"`
 }
 
 func loadFromFile(cfg *Config) (err error) {
