@@ -18,8 +18,8 @@ var (
 // root represents the base command when called without any sub commands.
 var root = &cobra.Command{
 	Use:   "jobwatcher",
-	Short: "DataWorkbench Job Watcher",
-	Long:  "DataWorkbench Job Watcher",
+	Short: "Dataomnis Job Watcher",
+	Long:  "Dataomnis Job Watcher",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		if versionFlag {

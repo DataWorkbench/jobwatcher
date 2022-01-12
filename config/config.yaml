@@ -26,7 +26,7 @@ mysql:
   hosts: "127.0.0.1:3306"  # required
   users: "root"  # required
   password: "password"  # required
-  database: "data_workbench"  # required
+  database: "dataomnis"  # required
   max_idle_conn: 16
   max_open_conn: 128
   conn_max_lifetime: 10m
